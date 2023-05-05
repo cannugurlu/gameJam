@@ -232,7 +232,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -501,7 +501,12 @@ MonoBehaviour:
   speedHorizantal: 3
   mouseControllerY: 2
   mouseControllerX: 2
-  distanceForCollecting: 10
+  pitchMax: 60
+  pitchMin: -60
+  yawMax: 0
+  yawMin: 180
+  distanceForCollecting: 4.5
+  sizeChange: 0.3
 --- !u!136 &702903980
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -574,9 +579,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 702903978}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: -2.79}
+  m_LocalPosition: {x: 0, y: 0.8, z: -3.285}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 963194228}
   m_Father: {fileID: 0}
@@ -769,7 +774,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.14043508, y: -0, z: -0, w: 0.9900899}
-  m_LocalPosition: {x: 0, y: 0.64, z: 0.75}
+  m_LocalPosition: {x: 0, y: 0.835, z: 0.225}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -962,7 +967,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0

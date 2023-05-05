@@ -8,13 +8,35 @@ public class Player : MonoBehaviour
 
     // components 
     Rigidbody rigidBody;
-    [SerializeField] float speedVertical, speedHorizantal, mouseControllerY, mouseControllerX;
+    [Header("Movement")]
+    [SerializeField] float speedVertical;
+    [SerializeField] float speedHorizantal; 
+    [SerializeField] float mouseControllerY;
+    [SerializeField] float mouseControllerX;
+
+    [Header("Mouse")]
+
+    [SerializeField] float pitchMax;
+    [SerializeField] float pitchMin;
+    [SerializeField] float yawMax;
+    [SerializeField] float yawMin;
+
     float pitch=0.0f;
     float yaw = 0.0f;
+
     private bool levelBoolen;
 
     [Header("Collect")]
     [SerializeField] float distanceForCollecting;
+
+    GameObject selectedObject;
+
+
+    [Header("Skills")]
+
+    [SerializeField] float sizeChange;
+
+    bool downScaled;
 
     void Start()
     {
@@ -25,7 +47,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         
-        transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
+        transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         if (Input.GetKey(KeyCode.W))
         {
             gameObject.transform.Translate(0, 0, speedVertical*Time.deltaTime);
@@ -51,26 +73,48 @@ public class Player : MonoBehaviour
         {
             teleport();
         }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            DownScale();
+        }
+
         yaw += mouseControllerX * Input.GetAxis("Mouse X");
         pitch -= mouseControllerY * Input.GetAxis("Mouse Y");
+
+        pitch = Mathf.Clamp(pitch,pitchMin,pitchMax);
         transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
 
 
         if(Input.GetMouseButtonDown(0))
         {
+
             RaycastHit hit = CastRay();
+
             if(!hit.collider)
             {
                 return;
             }
-            else if(hit.collider.gameObject.CompareTag("Collectible"))
+
+            else if(hit.collider.gameObject.CompareTag("Collectible") && selectedObject == null)
             {
-                float distance = Vector3.Distance(hit.collider.gameObject.transform.position,transform.position); 
+
+                selectedObject = hit.collider.gameObject;
+                float distance = Vector3.Distance(selectedObject.transform.position,transform.position); 
                 if(distance < distanceForCollecting)
                 {
-                    hit.collider.gameObject.transform.parent = this.gameObject.transform;
-                    hit.collider.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+                    selectedObject.transform.parent = this.gameObject.transform;
+
+                    selectedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
                 }
+
+            }
+
+            else if(selectedObject != null)
+            {
+                selectedObject.transform.parent = null;
+                selectedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                selectedObject = null;
             }
             
         }
@@ -80,11 +124,13 @@ public class Player : MonoBehaviour
     {
         if (levelBoolen) // 1.level
         {
+            
             float distanceX = transform.position.x - gameManager.instance.firstpos1.transform.position.x;
             float distanceZ = transform.position.z - gameManager.instance.firstpos1.transform.position.z;
             transform.position = new Vector3(gameManager.instance.firstpos2.transform.position.x + distanceX, 1.5f, 
                 gameManager.instance.firstpos2.transform.position.z + distanceZ);
             levelBoolen = false;
+
         }
         else // 2.level
         {
@@ -95,6 +141,22 @@ public class Player : MonoBehaviour
                 gameManager.instance.firstpos1.transform.position.z + distanceZ);
             levelBoolen = true;
 
+        }
+    }
+
+    void DownScale()
+    {
+        if(!downScaled)
+        {
+            transform.localScale= transform.localScale * sizeChange;
+            distanceForCollecting = distanceForCollecting / 2 ;
+            downScaled = true;
+        }
+        else
+        {
+            transform.localScale= new Vector3(1,1,1);
+            distanceForCollecting = distanceForCollecting * 2 ;
+            downScaled = false;
         }
     }
 
