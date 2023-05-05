@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class Player : MonoBehaviour
     float yaw = 0.0f;
     private bool levelBoolen;
 
+    [Header("Collect")]
+    [SerializeField] float distanceForCollecting;
 
     void Start()
     {
@@ -21,6 +24,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        
         transform.position = new Vector3(transform.position.x, 1.5f, transform.position.z);
         if (Input.GetKey(KeyCode.W))
         {
@@ -50,6 +54,26 @@ public class Player : MonoBehaviour
         yaw += mouseControllerX * Input.GetAxis("Mouse X");
         pitch -= mouseControllerY * Input.GetAxis("Mouse Y");
         transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
+
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit = CastRay();
+            if(!hit.collider)
+            {
+                return;
+            }
+            else if(hit.collider.gameObject.CompareTag("Collectible"))
+            {
+                float distance = Vector3.Distance(hit.collider.gameObject.transform.position,transform.position); 
+                if(distance < distanceForCollecting)
+                {
+                    hit.collider.gameObject.transform.parent = this.gameObject.transform;
+                    hit.collider.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+                }
+            }
+            
+        }
     }
 
     void teleport()
@@ -72,5 +96,17 @@ public class Player : MonoBehaviour
             levelBoolen = true;
 
         }
+    }
+
+
+    private RaycastHit CastRay()
+    {
+        Vector3 screenMousePosFar = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.farClipPlane);
+        Vector3 screenMousePosNear = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane);
+        Vector3 worldMousePosFar = Camera.main.ScreenToWorldPoint(screenMousePosFar);
+        Vector3 worldMousePosNear = Camera.main.ScreenToWorldPoint(screenMousePosNear);
+        RaycastHit hit;
+        Physics.Raycast(worldMousePosNear, worldMousePosFar - worldMousePosNear, out hit);
+        return hit;
     }
 }
