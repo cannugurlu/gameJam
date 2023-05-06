@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Player : MonoBehaviour
 {
@@ -35,46 +36,42 @@ public class Player : MonoBehaviour
     [Header("Skills")]
 
     [SerializeField] float sizeChange;
+    [SerializeField] float scalingTime;
+    [SerializeField] float increasedSpeed;
 
+    float startingSpeed;
     bool downScaled;
 
+    public static bool isPlayerMove;
+    public bool inPath;
+
+    bool canMove = true;
     void Start()
     {
         levelBoolen = true;
         rigidBody = GetComponent<Rigidbody>();
+
+        startingSpeed = speedVertical;
     }
 
     void Update()
     {
+        if(canMove)
+        {
+            MoveCharacter();
+        }
         
-        transform.position = new Vector3(transform.position.x, 0.8f, transform.position.z);
-        if (Input.GetKey(KeyCode.W))
-        {
-            gameObject.transform.Translate(0, 0, speedVertical*Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            gameObject.transform.Translate(-speedHorizantal * Time.deltaTime, 0, 0);
-
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            gameObject.transform.Translate(speedHorizantal * Time.deltaTime, 0, 0);
-
-
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            gameObject.transform.Translate(0, 0, -speedVertical * Time.deltaTime);
-
-        }
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             teleport();
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && levelBoolen)
+        {
+            RunFaster();
+        }
+
+        if (Input.GetKeyDown(KeyCode.E) && !levelBoolen)
         {
             DownScale();
         }
@@ -82,44 +79,104 @@ public class Player : MonoBehaviour
         yaw += mouseControllerX * Input.GetAxis("Mouse X");
         pitch -= mouseControllerY * Input.GetAxis("Mouse Y");
 
-        pitch = Mathf.Clamp(pitch,pitchMin,pitchMax);
+        pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
         transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
 
 
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
 
             RaycastHit hit = CastRay();
 
-            if(!hit.collider)
+            if (!hit.collider)
             {
                 return;
             }
 
-            else if(hit.collider.gameObject.CompareTag("Collectible") && selectedObject == null)
+            else if (hit.collider.gameObject.CompareTag("Collectible") && selectedObject == null)
             {
 
                 selectedObject = hit.collider.gameObject;
-                float distance = Vector3.Distance(selectedObject.transform.position,transform.position); 
-                if(distance < distanceForCollecting)
+                float distance = Vector3.Distance(selectedObject.transform.position, transform.position);
+                if (distance < distanceForCollecting)
                 {
                     selectedObject.transform.parent = this.gameObject.transform;
 
                     selectedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+
+                    selectedObject.GetComponent<BoxCollider>().size *= 2;
                 }
 
             }
 
-            else if(selectedObject != null)
+            else if (selectedObject != null)
             {
+
                 selectedObject.transform.parent = null;
                 selectedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                selectedObject.GetComponent<BoxCollider>().size = new Vector3(1, 1, 1);
                 selectedObject = null;
             }
-            
+
         }
     }
 
+    private void MoveCharacter()
+    {
+        rigidBody.velocity = Vector3.zero;
+        transform.position = new Vector3(transform.position.x, 4.36f, transform.position.z);
+        if (Input.GetKey(KeyCode.W))
+        {
+            gameObject.transform.Translate(0, 0, speedVertical * Time.deltaTime);
+            isPlayerMove = true;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            gameObject.transform.Translate(-speedHorizantal * Time.deltaTime, 0, 0);
+            isPlayerMove = true;
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            gameObject.transform.Translate(speedHorizantal * Time.deltaTime, 0, 0);
+            isPlayerMove = true;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            gameObject.transform.Translate(0, 0, -speedVertical * Time.deltaTime);
+            isPlayerMove = true;
+        }
+
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            isPlayerMove = false;
+        }
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            isPlayerMove = false;
+        }
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            isPlayerMove = false;
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            isPlayerMove = false;
+        }
+    }
+
+    void ChangeCharacter()
+    {
+        speedVertical = startingSpeed;
+
+        transform.localScale = new Vector3(2.9f,2.9f,2.9f);
+
+        downScaled = false;
+    }
+
+    //skills
     void teleport()
     {
         if (levelBoolen) // 1.level
@@ -127,9 +184,10 @@ public class Player : MonoBehaviour
 
             float distanceX = transform.position.x - gameManager.instance.firstpos1.transform.position.x;
             float distanceZ = transform.position.z - gameManager.instance.firstpos1.transform.position.z;
-            transform.position = new Vector3(gameManager.instance.firstpos2.transform.position.x + distanceX, 0.8f, 
+            transform.position = new Vector3(gameManager.instance.firstpos2.transform.position.x + distanceX, 4.36f, 
                 gameManager.instance.firstpos2.transform.position.z + distanceZ);
             levelBoolen = false;
+            ChangeCharacter();
 
         }
         else // 2.level
@@ -137,10 +195,11 @@ public class Player : MonoBehaviour
             
             float distanceX = transform.position.x- gameManager.instance.firstpos2.position.x;
             float distanceZ = transform.position.z- gameManager.instance.firstpos2.position.z;
-            transform.position = new Vector3(gameManager.instance.firstpos1.transform.position.x + distanceX, 0.8f,
+            transform.position = new Vector3(gameManager.instance.firstpos1.transform.position.x + distanceX, 4.36f,
                 gameManager.instance.firstpos1.transform.position.z + distanceZ);
             levelBoolen = true;
 
+            ChangeCharacter();
         }
     }
 
@@ -148,18 +207,22 @@ public class Player : MonoBehaviour
     {
         if(!downScaled)
         {
-            transform.localScale= transform.localScale * sizeChange;
-            distanceForCollecting = distanceForCollecting / 2 ;
+            transform.DOScale(0.5f, scalingTime); 
+            distanceForCollecting = 0.8f ;
             downScaled = true;
         }
         else
         {
-            transform.localScale= new Vector3(1,1,1);
-            distanceForCollecting = distanceForCollecting * 2 ;
+            transform.DOScale(2.9f, scalingTime);
+            distanceForCollecting = 4.5f ;
             downScaled = false;
         }
     }
 
+    private void RunFaster()
+    {
+        speedVertical = increasedSpeed;
+    }
 
     private RaycastHit CastRay()
     {
@@ -170,5 +233,18 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         Physics.Raycast(worldMousePosNear, worldMousePosFar - worldMousePosNear, out hit);
         return hit;
+    }
+
+
+    void OnCollisionEnter(Collision other) 
+    {
+        if(other.gameObject.CompareTag("Walls"))
+        canMove = false;
+    }
+
+    private void OnCollisionExit(Collision other) 
+    {
+        if(other.gameObject.CompareTag("Walls"))
+        canMove = true;
     }
 }
