@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         
-        transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        transform.position = new Vector3(transform.position.x, 0.8f, transform.position.z);
         if (Input.GetKey(KeyCode.W))
         {
             gameObject.transform.Translate(0, 0, speedVertical*Time.deltaTime);
@@ -124,10 +124,10 @@ public class Player : MonoBehaviour
     {
         if (levelBoolen) // 1.level
         {
-            
+
             float distanceX = transform.position.x - gameManager.instance.firstpos1.transform.position.x;
             float distanceZ = transform.position.z - gameManager.instance.firstpos1.transform.position.z;
-            transform.position = new Vector3(gameManager.instance.firstpos2.transform.position.x + distanceX, 1.5f, 
+            transform.position = new Vector3(gameManager.instance.firstpos2.transform.position.x + distanceX, 0.8f, 
                 gameManager.instance.firstpos2.transform.position.z + distanceZ);
             levelBoolen = false;
 
@@ -137,7 +137,7 @@ public class Player : MonoBehaviour
             
             float distanceX = transform.position.x- gameManager.instance.firstpos2.position.x;
             float distanceZ = transform.position.z- gameManager.instance.firstpos2.position.z;
-            transform.position = new Vector3(gameManager.instance.firstpos1.transform.position.x + distanceX, 1.5f,
+            transform.position = new Vector3(gameManager.instance.firstpos1.transform.position.x + distanceX, 0.8f,
                 gameManager.instance.firstpos1.transform.position.z + distanceZ);
             levelBoolen = true;
 
