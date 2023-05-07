@@ -27,6 +27,10 @@ public class EndGame : MonoBehaviour
 
     [SerializeField] Transform playersEndGamePosition;
 
+    [SerializeField] GameObject plain;
+
+    [SerializeField] Material plainMat;
+
     float pitch=0.0f;
     float yaw = 0.0f;
     
@@ -39,6 +43,9 @@ public class EndGame : MonoBehaviour
 
     void Update() 
     {
+
+        miniGame.transform.position = new Vector3(-0.469999999f,5.375f,458.880005f);
+
         if(gameManager.instance.miniGamePhase)
         {
             player.transform.DOMove(playersMiniGamePosition.position,1.5f);
@@ -52,7 +59,7 @@ public class EndGame : MonoBehaviour
 
             transform.eulerAngles = new Vector3(yaw, 0, pitch);
         }
-
+        
         else if(gameManager.instance.endingPhase)
         {
             player.transform.DOMove(playersEndGamePosition.position,1.5f).OnComplete(() =>
@@ -72,6 +79,8 @@ public class EndGame : MonoBehaviour
         {
             gameManager.instance.gameHasEnded = true;
             gameManager.instance.miniGamePhase = true;
+
+            plain.GetComponent<MeshRenderer>().material = plainMat;
         }    
     }
 }

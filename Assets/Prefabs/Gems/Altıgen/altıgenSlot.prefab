@@ -127,7 +127,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -6478536213147159724, guid: 4b9645f648acb924baffb432532501b6, type: 3}
+  - {fileID: 2100000, guid: e69eca1d503444441b90ce2ce9030cb7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -167,6 +167,8 @@ MonoBehaviour:
   - {fileID: 2870210659081006421}
   gemPrefab: {fileID: 1558015860114068680, guid: 40941c8120b6bf44184634cf6b42d389, type: 3}
   connectParticle: {fileID: 19820518, guid: 8906de79e38d722448ed84e0c648ed37, type: 3}
+  gemsRotation: {x: 0, y: 0, z: 0}
+  collectedGemParts: []
   placementTime: 1
 --- !u!1 &6860345355362822296
 GameObject:

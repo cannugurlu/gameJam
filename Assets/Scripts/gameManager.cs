@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class gameManager : MonoBehaviour
 {
+    
+    public GameObject futureMaze;
 
+    public GameObject AncientMaze;
+    
     public static gameManager instance { get; set; }
 
     public Transform firstpos1, firstpos2;
@@ -15,6 +19,7 @@ public class gameManager : MonoBehaviour
 
     public bool endingPhase;
 
+    public float sceneLoadDelayTime;
     private void Awake()
     {
         if (instance == null)

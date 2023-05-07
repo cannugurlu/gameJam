@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class EndingBall : MonoBehaviour
 {
-    [SerializeField] float rotateValue;
-
     void OnTriggerEnter(Collider other) 
     {
-        if(other.gameObject.CompareTag("EndingHole"))
+        if(other.gameObject.CompareTag("MinigameExit"))
         {
             gameManager.instance.miniGamePhase = false;
             gameManager.instance.endingPhase = true;

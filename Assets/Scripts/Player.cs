@@ -22,15 +22,14 @@ public class Player : MonoBehaviour
     [SerializeField] float yawMax;
     [SerializeField] float yawMin;
 
+
     float pitch=0.0f;
     float yaw = 0.0f;
-
-    private bool levelBoolen;
 
     [Header("Collect")]
     [SerializeField] float distanceForCollecting;
 
-    GameObject selectedObject;
+    public GameObject selectedObject;
 
 
     [Header("Skills")]
@@ -38,27 +37,32 @@ public class Player : MonoBehaviour
     [SerializeField] float sizeChange;
     [SerializeField] float scalingTime;
     [SerializeField] float increasedSpeed;
-
+    bool levelBool;
+    public bool canTeleport;
+    
     float startingSpeed;
     bool downScaled;
+    
 
-    public static bool isPlayerMoving ;
+    // bools
+    public static bool isPlayerMoving;
     public bool inPath = true;
 
     bool canMove = true;
     void Start()
     {
-        levelBoolen = true;
         rigidBody = GetComponent<Rigidbody>();
+        
 
         startingSpeed = speedVertical;
     }
 
     void Update()
     {
+        Debug.Log(levelBool);
         if(gameManager.instance.gameHasEnded)
         {
-            isPlayerMoving =false;
+            isPlayerMoving = false;
             return;
         }
 
@@ -69,27 +73,30 @@ public class Player : MonoBehaviour
             MoveCharacter();
         }
         
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.F) && canTeleport)
         {
             teleport();
         }
 
-        if (Input.GetKeyDown(KeyCode.E) && levelBoolen)
+        if (Input.GetKeyDown(KeyCode.E) && !levelBool)
         {
             RunFaster();
         }
 
-        if (Input.GetKeyDown(KeyCode.E) && !levelBoolen)
+        if (Input.GetKeyDown(KeyCode.E) && levelBool)
         {
             DownScale();
         }
 
-        yaw += mouseControllerX * Input.GetAxis("Mouse X");
-        pitch -= mouseControllerY * Input.GetAxis("Mouse Y");
+        if(!gameManager.instance.gameHasEnded)
+        {
+            yaw += mouseControllerX * Input.GetAxis("Mouse X");
+            pitch -= mouseControllerY * Input.GetAxis("Mouse Y");
 
-        pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
-        transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
-
+            pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
+            transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
+        }
+        
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -103,7 +110,6 @@ public class Player : MonoBehaviour
 
             else if (hit.collider.gameObject.CompareTag("Collectible") && selectedObject == null)
             {
-                Debug.Log("help");
                 selectedObject = hit.collider.gameObject;
                 float distance = Vector3.Distance(selectedObject.transform.position, transform.position);
 
@@ -189,28 +195,32 @@ public class Player : MonoBehaviour
     //skills
     void teleport()
     {
-        if (levelBoolen) // 1.level
+        if (!levelBool) // 1.level
         {
-
             float distanceX = transform.position.x - gameManager.instance.firstpos1.transform.position.x;
             float distanceZ = transform.position.z - gameManager.instance.firstpos1.transform.position.z;
             transform.position = new Vector3(gameManager.instance.firstpos2.transform.position.x + distanceX, 4.36f, 
                 gameManager.instance.firstpos2.transform.position.z + distanceZ);
-            levelBoolen = false;
+
+            gameManager.instance.AncientMaze.SetActive(true);
+            gameManager.instance.futureMaze.SetActive(false);
+            levelBool = true;
             ChangeCharacter();
 
         }
         else // 2.level
         {
-            
             float distanceX = transform.position.x- gameManager.instance.firstpos2.position.x;
             float distanceZ = transform.position.z- gameManager.instance.firstpos2.position.z;
             transform.position = new Vector3(gameManager.instance.firstpos1.transform.position.x + distanceX, 4.36f,
                 gameManager.instance.firstpos1.transform.position.z + distanceZ);
-            levelBoolen = true;
-
+            levelBool = false;
+            gameManager.instance.AncientMaze.SetActive(false);
+            gameManager.instance.futureMaze.SetActive(true);
             ChangeCharacter();
         }
+
+        canTeleport = false;
     }
 
     void DownScale()
@@ -265,5 +275,10 @@ public class Player : MonoBehaviour
             canMove = true;
         }
         
+    }
+
+    public void KillPlayer()
+    {
+       
     }
 }
