@@ -6,14 +6,15 @@ TagManager:
   tags:
   - Collectible
   - Walls
+  - PathFinder
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
+  - PathFinder
   - 
   - 
   - 

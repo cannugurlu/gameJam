@@ -42,8 +42,8 @@ public class Player : MonoBehaviour
     float startingSpeed;
     bool downScaled;
 
-    public static bool isPlayerMove;
-    public bool inPath;
+    public static bool isPlayerMoving ;
+    public bool inPath = true;
 
     bool canMove = true;
     void Start()
@@ -56,6 +56,14 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if(gameManager.instance.gameHasEnded)
+        {
+            isPlayerMoving =false;
+            return;
+        }
+
+        transform.position = new Vector3(transform.position.x, 4.36f, transform.position.z);
+
         if(canMove)
         {
             MoveCharacter();
@@ -95,14 +103,17 @@ public class Player : MonoBehaviour
 
             else if (hit.collider.gameObject.CompareTag("Collectible") && selectedObject == null)
             {
-
+                Debug.Log("help");
                 selectedObject = hit.collider.gameObject;
                 float distance = Vector3.Distance(selectedObject.transform.position, transform.position);
+
+                Debug.Log(selectedObject.name);
                 if (distance < distanceForCollecting)
                 {
+
                     selectedObject.transform.parent = this.gameObject.transform;
 
-                    selectedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+                    selectedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;
 
                     selectedObject.GetComponent<BoxCollider>().size *= 2;
                 }
@@ -124,46 +135,45 @@ public class Player : MonoBehaviour
     private void MoveCharacter()
     {
         rigidBody.velocity = Vector3.zero;
-        transform.position = new Vector3(transform.position.x, 4.36f, transform.position.z);
         if (Input.GetKey(KeyCode.W))
         {
             gameObject.transform.Translate(0, 0, speedVertical * Time.deltaTime);
-            isPlayerMove = true;
+            isPlayerMoving  = true;
         }
 
         if (Input.GetKey(KeyCode.A))
         {
             gameObject.transform.Translate(-speedHorizantal * Time.deltaTime, 0, 0);
-            isPlayerMove = true;
+            isPlayerMoving  = true;
         }
 
         if (Input.GetKey(KeyCode.D))
         {
             gameObject.transform.Translate(speedHorizantal * Time.deltaTime, 0, 0);
-            isPlayerMove = true;
+            isPlayerMoving  = true;
         }
 
         if (Input.GetKey(KeyCode.S))
         {
             gameObject.transform.Translate(0, 0, -speedVertical * Time.deltaTime);
-            isPlayerMove = true;
+            isPlayerMoving  = true;
         }
 
         if (Input.GetKeyUp(KeyCode.W))
         {
-            isPlayerMove = false;
+            isPlayerMoving  = false;
         }
         if (Input.GetKeyUp(KeyCode.A))
         {
-            isPlayerMove = false;
+            isPlayerMoving  = false;
         }
         if (Input.GetKeyUp(KeyCode.D))
         {
-            isPlayerMove = false;
+            isPlayerMoving  = false;
         }
         if (Input.GetKeyUp(KeyCode.S))
         {
-            isPlayerMove = false;
+            isPlayerMoving  = false;
         }
     }
 
@@ -205,6 +215,10 @@ public class Player : MonoBehaviour
 
     void DownScale()
     {
+        if(gameManager.instance.gameHasEnded)
+        {
+            return;
+        }
         if(!downScaled)
         {
             transform.DOScale(0.5f, scalingTime); 
@@ -239,12 +253,17 @@ public class Player : MonoBehaviour
     void OnCollisionEnter(Collision other) 
     {
         if(other.gameObject.CompareTag("Walls"))
-        canMove = false;
+        {
+            canMove = false;
+        }
     }
 
     private void OnCollisionExit(Collision other) 
     {
         if(other.gameObject.CompareTag("Walls"))
-        canMove = true;
+        {
+            canMove = true;
+        }
+        
     }
 }

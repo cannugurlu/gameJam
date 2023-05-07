@@ -17,7 +17,7 @@ public class headBob : MonoBehaviour
     public void Update()
 	{
 		var position = transform.localPosition;
-		if (!Player.isPlayerMove)
+		if (!Player.isPlayerMoving )
 		{
 			if (timer == 0 || Mathf.Abs(timer - Mathf.PI) < 0.01)
 			{

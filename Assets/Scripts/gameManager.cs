@@ -7,7 +7,13 @@ public class gameManager : MonoBehaviour
 
     public static gameManager instance { get; set; }
 
-   public Transform firstpos1, firstpos2;
+    public Transform firstpos1, firstpos2;
+
+    public bool gameHasEnded;
+
+    public bool miniGamePhase;
+
+    public bool endingPhase;
 
     private void Awake()
     {
@@ -18,7 +24,9 @@ public class gameManager : MonoBehaviour
     }
     void Start()
     {
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
     }
 }

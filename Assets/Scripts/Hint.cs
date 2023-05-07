@@ -10,42 +10,70 @@ public class Hint : MonoBehaviour
 
     [SerializeField] GameObject pathFinder;
 
+    float startingTimer;
     Player player;
 
     void Start() 
     {
         player = FindObjectOfType<Player>();
+        startingTimer = timer;
     }
 
     void Update()
     {
+        if(gameManager.instance.gameHasEnded)
+        {
+            return;
+        }
+
         if(player.inPath)
         {
             return;
         }
+
         else
         {
             timer -= Time.deltaTime;
-            if(timer == 0)
+
+            if(timer <= 0)
             {
                 ShowPath();
             }
+
         }
     }
 
     void ShowPath()
     {
-        Instantiate(pathFinder,player.transform.position,Quaternion.identity);
-        pathFinder.GetComponent<NavMeshAgent>().SetDestination(this.gameObject.transform.position);
+        bool pathShown = false;
+        if(!pathShown)
+        {
+            Instantiate(pathFinder,player.transform.position,Quaternion.identity);
+            pathFinder.GetComponent<NavMeshAgent>().destination = this.gameObject.transform.position;
+            timer = startingTimer;
+            pathShown = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other) 
     {
-        player.inPath = true;
+        if(other.CompareTag("Player"))
+        {
+            player.inPath = true;
+        }
+
+        if(other.CompareTag("PathFinder"))
+        {
+            other.gameObject.SetActive(false);
+        }
+        
     }
 
     private void OnTriggerExit(Collider other) 
     {
-        player.inPath = false;
+        if(other.CompareTag("Player"))
+        {
+            player.inPath = false;
+        }
     }
 }
