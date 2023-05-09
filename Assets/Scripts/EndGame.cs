@@ -25,11 +25,16 @@ public class EndGame : MonoBehaviour
 
     [Header("Ending")]
 
-    [SerializeField] Transform playersEndGamePosition;
+    [SerializeField] Transform doorsEndGamePosition;
 
     [SerializeField] GameObject plain;
 
     [SerializeField] Material plainMat;
+
+    [SerializeField] GameObject leftDoor;
+
+    [SerializeField] GameObject rightDoor;
+
 
     float pitch=0.0f;
     float yaw = 0.0f;
@@ -59,16 +64,10 @@ public class EndGame : MonoBehaviour
 
             transform.eulerAngles = new Vector3(yaw, 0, pitch);
         }
-        
         else if(gameManager.instance.endingPhase)
         {
-            player.transform.DOMove(playersEndGamePosition.position,1.5f).OnComplete(() =>
-            {
-                player.transform.DORotate(playersMiniGameRotation,1.5f).
-                    SetEase( Ease.InOutSine ).SetLoops( -1, LoopType.Yoyo);
-            });
-                
-
+            leftDoor.transform.position = Vector3.MoveTowards(leftDoor.transform.position,doorsEndGamePosition.position,15.0f);
+            rightDoor.transform.position = Vector3.MoveTowards(leftDoor.transform.position,doorsEndGamePosition.position,15.0f);
             // sonlanma durumuna göre silinecek
         }
     }

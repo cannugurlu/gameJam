@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -206,7 +207,7 @@ public class Player : MonoBehaviour
             gameManager.instance.futureMaze.SetActive(false);
             levelBool = true;
             ChangeCharacter();
-
+            gameManager.instance.teleportText.SetActive(false);
         }
         else // 2.level
         {
@@ -218,6 +219,7 @@ public class Player : MonoBehaviour
             gameManager.instance.AncientMaze.SetActive(false);
             gameManager.instance.futureMaze.SetActive(true);
             ChangeCharacter();
+            gameManager.instance.teleportText.SetActive(false);
         }
 
         canTeleport = false;
@@ -279,6 +281,13 @@ public class Player : MonoBehaviour
 
     public void KillPlayer()
     {
-       
+       gameManager.instance.endhud.SetActive(true);
+       StartCoroutine("Reloadlevel");
+    }
+
+    IEnumerator Reloadlevel()
+    {
+        yield return new WaitForSecondsRealtime(2.0f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

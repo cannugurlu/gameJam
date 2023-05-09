@@ -8,6 +8,10 @@ public class gameManager : MonoBehaviour
     public GameObject futureMaze;
 
     public GameObject AncientMaze;
+
+    public GameObject endhud;
+
+    public GameObject teleportText;
     
     public static gameManager instance { get; set; }
 

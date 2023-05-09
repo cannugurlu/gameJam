@@ -63,6 +63,8 @@ public class GemPlacer : MonoBehaviour
 
                 StartCoroutine("StopParticle");
 
+                gameManager.instance.teleportText.SetActive(true);
+
             }
         }
     }
